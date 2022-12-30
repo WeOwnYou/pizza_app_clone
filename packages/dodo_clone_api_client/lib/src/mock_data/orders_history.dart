@@ -1,0 +1,102 @@
+part of 'mock_data.dart';
+
+Map<String, dynamic> mockOrdersHistory(String accessToken) => {
+      'person_id': 777,
+      'orders_total': 35,
+      'days_to_show': 20,
+      'orders': [
+        {
+          'id': 0,
+          'date_time': '2014-01-29T00:00:00',
+          'type': 'deliver',
+          'address': {
+            'city': 'Тамбов',
+            'street': 'Чичерина',
+            'house': '27',
+            'lon': '52.76517815428631',
+            'lat': '41.403241323564515',
+            'start_time': '10:00',
+            'end_time': '22:00',
+          },
+          'shopping_cart': [orders[0], orders[1], orders[2], orders[3]],
+        },
+        {
+          'id': 10,
+          'date_time': '2014-01-29T00:00:00',
+          'type': 'deliver',
+          'address': {
+            'city': 'Тамбов',
+            'street': 'Чичерина',
+            'house': '27',
+            'lon': '52.76517815428631',
+            'lat': '41.403241323564515',
+            'start_time': '10:00',
+            'end_time': '22:00',
+          },
+          'shopping_cart': [
+            orders[4],
+            orders[5],
+            orders[6],
+          ],
+        },
+        {
+          'id': 315,
+          'date_time': '2014-01-29T00:00:00',
+          'type': 'deliver',
+          'address': {
+            'city': 'Тамбов',
+            'street': 'Чичерина',
+            'house': '27',
+            'lon': '52.76517815428631',
+            'lat': '41.403241323564515',
+            'start_time': '10:00',
+            'end_time': '22:00',
+          },
+          'shopping_cart': [
+            orders[7],
+            orders[8],
+            orders[9],
+          ],
+        },
+        {
+          'id': 434,
+          'date_time': '2014-01-29T00:00:00',
+          'type': 'deliver',
+          'address': {
+            'city': 'Тамбов',
+            'street': 'Чичерина',
+            'house': '27',
+            'lon': '52.76517815428631',
+            'lat': '41.403241323564515',
+            'start_time': '10:00',
+            'end_time': '22:00',
+          },
+          'shopping_cart': [
+            orders[10],
+            orders[1],
+            orders[2],
+            orders[3],
+          ],
+        },
+        {
+          'id': 555,
+          'date_time': '2014-01-29T00:00:00',
+          'type': 'deliver',
+          'address': {
+            'city': 'Тамбов',
+            'street': 'Чичерина',
+            'house': '27',
+            'lon': '52.76517815428631',
+            'lat': '41.403241323564515',
+            'start_time': '10:00',
+            'end_time': '22:00',
+          },
+          'shopping_cart': [
+            orders[4],
+            orders[5],
+            orders[6],
+            orders[7],
+          ],
+        },
+      ],
+    };
