@@ -16,5 +16,5 @@ extension CustomIntExtension on int {
 
   String get rubles => '$this ₽';
 
-  String get coins => '${this} D';
+  String get coins => '$this D';
 }

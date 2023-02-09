@@ -4,7 +4,8 @@ import 'package:dodo_clone/src/core/ui/navigation/domain/app_route_names.dart';
 import 'package:dodo_clone/src/core/ui/navigation/domain/app_route_paths.dart';
 import 'package:dodo_clone/src/features/menu/ui/view/menu_view/menu_view.dart';
 import 'package:dodo_clone/src/features/menu/ui/view/search_view.dart';
-import 'package:dodo_clone/src/features/menu/ui/view/story_view/story_view.dart';
+import 'package:dodo_clone/src/features/menu/ui/view/story_view.dart';
+// import 'package:dodo_clone/src/features/menu/ui/view/story_view/story_view.dart';
 
 const menuRoutes = AutoRoute<dynamic>(
   path: AppRoutePaths.menuPath,

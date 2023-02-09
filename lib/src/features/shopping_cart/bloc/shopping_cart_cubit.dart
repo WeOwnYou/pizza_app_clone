@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:address_repository/address_repository.dart';
-import 'package:collection/collection.dart';
 import 'package:dodo_clone/src/features/shopping_cart/bloc/shopping_cart_state.dart';
 import 'package:dodo_clone_repository/dodo_clone_repository.dart'
     hide OrderType;

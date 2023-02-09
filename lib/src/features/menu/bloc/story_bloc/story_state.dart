@@ -2,111 +2,58 @@ import 'package:dodo_clone_repository/dodo_clone_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
-/// States:
-/// 1. initial (with initialIndex)
-/// 2. loading (while image (or other content) loading)
-/// 3. successful (has data)
-/// 4. failure (if anything goes wrong)
-
-abstract class StoryState extends Equatable {
-  const StoryState();
-}
-
-class StoryStateInitial extends StoryState {
-  final int storyActiveIndex;
-
-  @override
-  List<Object?> get props => [storyActiveIndex];
-
-  const StoryStateInitial({
-    required this.storyActiveIndex,
-  });
-}
-
-class StoryStateSuccess extends StoryState {
-  final int storyActiveIndex;
-  final List<Story> stories;
-  final List<int> storyItemsActiveIndexes;
-
-  @override
-  List<Object?> get props => [
-        storyActiveIndex,
-        stories,
-        storyItemsActiveIndexes,
-      ];
-
-  Story get currentStory => stories[storyActiveIndex];
-  StoryItem get currentStoryItem =>
-      currentStory.storyItems[storyItemsActiveIndexes[storyActiveIndex]];
-  int get storyItemActiveIndex => storyItemsActiveIndexes[storyActiveIndex];
-
-  const StoryStateSuccess({
-    required this.storyActiveIndex,
-    required this.stories,
-    required this.storyItemsActiveIndexes,
-  });
-}
-
-class StoryStateFailure extends StoryState {
-  final String message;
-
-  @override
-  List<Object?> get props => [message];
-
-  const StoryStateFailure({
-    required this.message,
-  });
-}
-
-enum StoryStateStatus { initial, success, failure }
+enum StoryStateStatus { initial, success, failure } //inactive, active, paused }
 
 @immutable
-class StoryStateOld extends Equatable {
+class StoryState extends Equatable {
   final StoryStateStatus status;
   final List<Story> stories;
   final int storyActiveIndex;
   final List<int> storyItemsActiveIndexes;
+  // final int storyItemActiveIndex;
 
   Story get currentStory => stories[storyActiveIndex];
   StoryItem get currentStoryItem =>
       currentStory.storyItems[storyItemsActiveIndexes[storyActiveIndex]];
   int get storyItemActiveIndex => storyItemsActiveIndexes[storyActiveIndex];
 
-  const StoryStateOld({
+  const StoryState({
     required this.status,
     required this.stories,
     required this.storyActiveIndex,
     required this.storyItemsActiveIndexes,
+    // required this.storyItemActiveIndex,
   });
 
-  factory StoryStateOld.initial(int index) => StoryStateOld(
-        status: StoryStateStatus.initial,
-        stories: List.empty(),
-        storyActiveIndex: index,
-        storyItemsActiveIndexes: List.empty(),
-      );
+  static const empty = StoryState(
+    status: StoryStateStatus.initial,
+    stories: [],
+    storyActiveIndex: 0,
+    storyItemsActiveIndexes: [],
+    // storyItemActiveIndex: 0,
+  );
 
   @override
   List<Object?> get props => [
-        status,
-        stories,
-        storyActiveIndex,
-        storyItemsActiveIndexes,
+        status, stories, storyActiveIndex, storyItemsActiveIndexes,
+        // storyItemActiveIndex,
       ];
 
-  StoryStateOld copyWith({
+  StoryState copyWith({
     StoryStateStatus? status,
     List<Story>? stories,
     int? storyActiveIndex,
-    List<int>? storyItemsActiveIndexes,
+    // int? storyItemActiveIndex,
     Set<int>? watchedStoryIDs,
+    List<int>? storyItemsActiveIndexes,
   }) {
-    return StoryStateOld(
+    return StoryState(
       status: status ?? this.status,
       stories: stories ?? this.stories,
       storyActiveIndex: storyActiveIndex ?? this.storyActiveIndex,
       storyItemsActiveIndexes:
           storyItemsActiveIndexes ?? this.storyItemsActiveIndexes,
+      // storyItemActiveIndex: storyItemActiveIndex ?? this.storyItemActiveIndex,
     );
   }
 }

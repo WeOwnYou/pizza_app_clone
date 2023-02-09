@@ -79,7 +79,7 @@ class _BonusesBlockViewState extends State<BonusesBlockView> {
         ),
       ),
     );
-    overlayState?.insert(_overlayEntry!);
+    overlayState.insert(_overlayEntry!);
     Future<void>.delayed(const Duration(seconds: 2), () {
       if (_overlayEntry?.mounted ?? false) {
         _overlayEntry!.remove();

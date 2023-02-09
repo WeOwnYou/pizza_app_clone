@@ -114,6 +114,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                               );
                             }
                           }
+                          // ignore: use_build_context_synchronously
                           await showModalBottomSheet<void>(
                             barrierColor: Colors.transparent,
                             context: context,

@@ -7,10 +7,7 @@ class _SpecialProductsBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height *
+        height: MediaQuery.of(context).size.height *
             MenuConstants.specialBlockFromHeight,
         child: BlocBuilder<MenuBloc, MenuState>(
           builder: (ctx, state) {
@@ -29,11 +26,11 @@ class _SpecialProductsBlock extends StatelessWidget {
                     product: state.specialProducts[index],
                     onItemAddedByPrice: () {
                       context.read<MenuBloc>().add(
-                        MenuAddProductToCartEvent(
-                          product: state.specialProducts[index],
-                          needToAnimate: true,
-                        ),
-                      );
+                            MenuAddProductToCartEvent(
+                              product: state.specialProducts[index],
+                              needToAnimate: true,
+                            ),
+                          );
                     }
                     // onItemAdded: (product, offer)=>context.read<MenuBloc>().add(
                     //   MenuAddProductToCartEvent(
@@ -41,6 +38,7 @@ class _SpecialProductsBlock extends StatelessWidget {
                     //     needToAnimate: true,
                     //   ),
                     // ),
+                    ,
                   ),
                 );
               },
@@ -72,7 +70,9 @@ class SpecialProductsTitle extends StatelessWidget {
         child: BlocBuilder<MenuBloc, MenuState>(
           builder: (context, state) {
             return Text(
-              state.orderType == OrderType.delivery ? 'Выгодно и вкусно' : 'Вам понравится',
+              state.orderType == OrderType.delivery
+                  ? 'Выгодно и вкусно'
+                  : 'Вам понравится',
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,

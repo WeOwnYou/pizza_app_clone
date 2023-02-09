@@ -10,7 +10,7 @@ import 'package:dodo_clone/src/features/menu/ui/menu_export.dart';
 import 'package:dodo_clone/src/features/menu/ui/utils/constants.dart';
 import 'package:dodo_clone/src/features/menu/ui/view/product_details_view.dart';
 import 'package:dodo_clone_repository/dodo_clone_repository.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductCard extends StatelessWidget {
@@ -174,9 +174,11 @@ class ProductCard extends StatelessWidget {
                 position: specialBlock
                     ? BadgePosition.topEnd(top: 1, end: 1)
                     : BadgePosition.topEnd(end: 25),
-                shape: BadgeShape.square,
-                borderRadius:
-                    const BorderRadius.all(Radius.elliptical(100, 50)),
+                badgeStyle: const BadgeStyle(
+                  shape: BadgeShape.square,
+                  borderRadius: BorderRadius.all(Radius.elliptical(100, 50)),
+                  badgeColor: Colors.yellow,
+                ),
                 badgeContent: const Text(
                   'Hit!!!',
                   style: TextStyle(
@@ -184,7 +186,6 @@ class ProductCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                badgeColor: Colors.yellow,
                 child: ProductImageWidget(
                   url: image,
                 ),

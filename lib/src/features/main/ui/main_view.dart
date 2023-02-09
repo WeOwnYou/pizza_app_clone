@@ -20,7 +20,7 @@ import 'package:dodo_clone/src/features/shopping_cart/bloc/shopping_cart_cubit.d
 import 'package:dodo_clone/src/features/shopping_cart/ui/shopping_cart_export.dart';
 import 'package:dodo_clone_repository/dodo_clone_repository.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:person_repository/person_repository.dart';
@@ -173,11 +173,13 @@ class _MainViewState extends State<MainView> {
                         return Badge(
                           showBadge: unreadMessages.isNotEmpty &&
                               profileState.person.isNotEmpty,
-                          position: const BadgePosition(top: -9, end: -9),
+                          // position: const BadgePosition(top: -9, end: -9),
+                          position: BadgePosition.topStart(),
                           badgeContent: Text(
                             unreadMessages.length.toString(),
                           ),
-                          child: ContactsView.androidIcon(tabsRouter.isContacts),
+                          child:
+                              ContactsView.androidIcon(tabsRouter.isContacts),
                         );
                       },
                     );
@@ -189,12 +191,15 @@ class _MainViewState extends State<MainView> {
                 icon: BlocBuilder<MainCubit, MainState>(
                   builder: (context, state) {
                     return Badge(
-                      badgeColor: AppColors.mainRed,
+                      badgeStyle:
+                          const BadgeStyle(badgeColor: AppColors.mainRed),
                       showBadge: state.shoppingCartLength > 0,
                       badgeContent: Text(
                         '${state.shoppingCartLength}',
                       ),
-                      child: ShoppingCartView.androidIcon(tabsRouter.isShoppingCart),
+                      child: ShoppingCartView.androidIcon(
+                        tabsRouter.isShoppingCart,
+                      ),
                     );
                   },
                 ),
@@ -239,7 +244,7 @@ class _MainViewState extends State<MainView> {
                     return Badge(
                       showBadge: unreadMessages.isNotEmpty &&
                           profileState.person.isNotEmpty,
-                      position: const BadgePosition(top: -9, end: -9),
+                      position: BadgePosition.topStart(),
                       badgeContent: Text(
                         unreadMessages.length.toString(),
                       ),
@@ -255,7 +260,7 @@ class _MainViewState extends State<MainView> {
             icon: BlocBuilder<MainCubit, MainState>(
               builder: (context, state) {
                 return Badge(
-                  badgeColor: AppColors.mainRed,
+                  badgeStyle: const BadgeStyle(badgeColor: AppColors.mainRed),
                   showBadge: state.shoppingCartLength > 0,
                   badgeContent: Text(
                     '${state.shoppingCartLength}',

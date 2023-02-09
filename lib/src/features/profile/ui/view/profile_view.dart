@@ -25,11 +25,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:person_repository/person_repository.dart';
 
-const _kMainVerticalPadding = 20.0;
-const _kMainHorizontalPadding = 15.0;
 const double minChildSize = 0.72;
 const double maxChildSize = 1;
-const double _kFlexibleFromHeight = 0.2;
 
 class ProfileView extends StatefulWidget {
   static const title = 'Профиль';
@@ -44,7 +41,8 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView> {
-  late final ScrollController _controller;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  late final DraggableScrollableController _draggableController;
   late final TabsRouter tabsController;
   late int currentIndex;
   double topOpacity = 1.0;
@@ -55,22 +53,17 @@ class _ProfileViewState extends State<ProfileView> {
     tabsController = AutoTabsRouter.of(context)
       ..addListener(tabsControllerListener);
     currentIndex = tabsController.activeIndex;
-    _controller = ScrollController()..addListener(_scrollControllerListener);
-    // _draggableController = DraggableScrollableController()
-    //   ..addListener(draggableControllerListener);
+    _draggableController = DraggableScrollableController()
+      ..addListener(draggableControllerListener);
   }
-  //
-  // void draggableControllerListener() {
-  //   if (!_draggableController.isAttached) return;
-  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-  //     if (mounted) {
-  //       setState(() {});
-  //     }
-  //   });
-  // }
 
-  void _scrollControllerListener() {
-    setState(() {});
+  void draggableControllerListener() {
+    if (!_draggableController.isAttached) return;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   void tabsControllerListener() {
@@ -81,7 +74,7 @@ class _ProfileViewState extends State<ProfileView> {
       if (!mounted) return;
       AutoRouter.of(context).canPop()
           ? AutoRouter.of(context).popTop()
-          : _controller.animateTo(
+          : _draggableController.animateTo(
               minChildSize,
               duration: duration,
               curve: curve,
@@ -93,7 +86,7 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -102,7 +95,7 @@ class _ProfileViewState extends State<ProfileView> {
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          stops: [0.2, 0.43],
+          stops: [0.2, 0.45],
         ),
       ),
       child: BlocBuilder<ProfileBloc, ProfileState>(
@@ -114,19 +107,83 @@ class _ProfileViewState extends State<ProfileView> {
             );
           }
           return Scaffold(
-            appBar: const _BuildAppBarWidget(),
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              toolbarHeight: kToolbarHeight * 1.4,
+              backgroundColor: Colors.transparent,
+              centerTitle: false,
+              title: Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Привет, ${state.person.name}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        PlatformDependentMethod.callFutureByPlatform(
+                          androidMethod: () =>
+                              showMaterialModalBottomSheet<void>(
+                            // expand: true,
+                            enableDrag: false,
+                            isDismissible: false,
+                            useRootNavigator: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (_) {
+                              return SettingsView(
+                                parentContext: context,
+                              );
+                            },
+                          ),
+                          iosMethod: () => showCupertinoModalBottomSheet<void>(
+                            enableDrag: false,
+                            isDismissible: false,
+                            useRootNavigator: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (_) {
+                              return SettingsView(
+                                parentContext: context,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.settings),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              elevation: 0,
+            ),
+            key: _scaffoldKey,
             backgroundColor: Colors.transparent,
             body: Stack(
               children: [
-                _BuildScrollableBackgroundWidget(
-                  controller: _controller,
-                  height:
-                      MediaQuery.of(context).size.height * _kFlexibleFromHeight,
+                Opacity(
+                  opacity: _draggableController.isAttached
+                      ? max(
+                          0,
+                          1 - (_draggableController.size - minChildSize) * 2.5,
+                        )
+                      : 1,
+                  child: const _BuildFlexibleBlockWidget(),
                 ),
-                _BuildBodyWidget(
-                  controller: _controller,
-                  height:
-                      MediaQuery.of(context).size.height * _kFlexibleFromHeight,
+                _BuildPromoBlockWidget(
+                  controller: _draggableController,
                 ),
               ],
             ),
@@ -137,181 +194,8 @@ class _ProfileViewState extends State<ProfileView> {
   }
 }
 
-class _BuildAppBarWidget extends StatelessWidget
-    implements PreferredSizeWidget {
-  const _BuildAppBarWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      toolbarHeight: kToolbarHeight * 1.4,
-      backgroundColor: Colors.transparent,
-      centerTitle: false,
-      title: Padding(
-        padding: const EdgeInsets.only(top: 15.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            BlocBuilder<ProfileBloc, ProfileState>(
-              builder: (context, state) {
-                return Text(
-                  'Привет, ${state.person.name}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                );
-              },
-            ),
-            GestureDetector(
-              onTap: () {
-                PlatformDependentMethod.callFutureByPlatform(
-                  androidMethod: () => showMaterialModalBottomSheet<void>(
-                    // expand: true,
-                    enableDrag: false,
-                    isDismissible: false,
-                    useRootNavigator: true,
-                    backgroundColor: Colors.transparent,
-                    context: context,
-                    builder: (_) {
-                      return SettingsView(
-                        parentContext: context,
-                      );
-                    },
-                  ),
-                  iosMethod: () => showCupertinoModalBottomSheet<void>(
-                    enableDrag: false,
-                    isDismissible: false,
-                    useRootNavigator: true,
-                    backgroundColor: Colors.transparent,
-                    context: context,
-                    builder: (_) {
-                      return SettingsView(
-                        parentContext: context,
-                      );
-                    },
-                  ),
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.settings),
-              ),
-            ),
-          ],
-        ),
-      ),
-      elevation: 0,
-    );
-  }
-
-  @override
-  Size get preferredSize => AppBar().preferredSize;
-}
-
-class _BuildScrollableBackgroundWidget extends StatelessWidget {
-  final ScrollController controller;
-  final double height;
-  const _BuildScrollableBackgroundWidget({
-    required this.controller,
-    required this.height,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      // top: height,
-      top: max(
-        0,
-        controller.hasClients ? (height - controller.offset) : height,
-      ),
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: const DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(12),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BuildBodyWidget extends StatelessWidget {
-  final ScrollController controller;
-  final double height;
-  const _BuildBodyWidget({
-    required this.controller,
-    required this.height,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      controller: controller,
-      slivers: [
-        SliverPersistentHeader(
-          delegate: _HeaderDelegate(controller: controller, height: height),
-        ),
-        const _BuildPromotionBlockWidget()
-      ],
-    );
-  }
-}
-
-class _HeaderDelegate extends SliverPersistentHeaderDelegate {
-  final ScrollController controller;
-  final double height;
-
-  const _HeaderDelegate({
-    required this.controller,
-    required this.height,
-  });
-
-  double get topPadding => min(
-        _kMainVerticalPadding * 2,
-        max(
-          0,
-          _kMainVerticalPadding -
-              (controller.hasClients ? controller.offset / 10 : 0),
-        ),
-      );
-
-  double get bottomPadding => min(
-        _kMainVerticalPadding * 2,
-        max(
-          0,
-          _kMainVerticalPadding +
-              (controller.hasClients ? controller.offset / 10 : 0),
-        ),
-      );
-
-  double _getOpacity(BuildContext context) {
-    double result = 1;
-    if (!controller.hasClients) return result;
-    result = 1 -
-        (controller.offset /
-            ((MediaQuery.of(context).size.height * 0.2) / 100) /
-            100);
-    if (result < 0) {
-      result = 0;
-    } else if (result > 1) {
-      result = 1;
-    }
-    return result;
-  }
+class _BuildFlexibleBlockWidget extends StatelessWidget {
+  const _BuildFlexibleBlockWidget({Key? key}) : super(key: key);
 
   Future<void> _androidBonusViewBuilder(BuildContext context) {
     final shoppingCartCubitState = context.read<ShoppingCartCubit>().state;
@@ -327,13 +211,13 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
           dodoCloneRepository: context.read<IDodoCloneRepository>(),
           personRepository: context.read<PersonRepository>(),
         )..add(
-          BonusesInitializeEvent(
-            coinsInCart:
-            shoppingCartCubitState.shoppingCartProducts.coinsSpent,
-            numberOfBonusOffersInCart: shoppingCartCubitState
-                .shoppingCartProducts.numberOfBonusesInCart,
+            BonusesInitializeEvent(
+              coinsInCart:
+                  shoppingCartCubitState.shoppingCartProducts.coinsSpent,
+              numberOfBonusOffersInCart: shoppingCartCubitState
+                  .shoppingCartProducts.numberOfBonusesInCart,
+            ),
           ),
-        ),
       ),
     );
   }
@@ -352,204 +236,71 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
           dodoCloneRepository: context.read<IDodoCloneRepository>(),
           personRepository: context.read<PersonRepository>(),
         )..add(
-          BonusesInitializeEvent(
-            coinsInCart:
-            shoppingCartCubitState.shoppingCartProducts.coinsSpent,
-            numberOfBonusOffersInCart: shoppingCartCubitState
-                .shoppingCartProducts.numberOfBonusesInCart,
+            BonusesInitializeEvent(
+              coinsInCart:
+                  shoppingCartCubitState.shoppingCartProducts.coinsSpent,
+              numberOfBonusOffersInCart: shoppingCartCubitState
+                  .shoppingCartProducts.numberOfBonusesInCart,
+            ),
           ),
-        ),
       ),
     );
   }
 
   @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Stack(
-      clipBehavior: Clip.antiAlias,
-      fit: StackFit.expand,
-      children: [
-        const SizedBox.expand(),
-        Positioned(
-          top: shrinkOffset,
-          bottom: controller.offset > 0 ? 0 - shrinkOffset : null,
-          left: 0,
-          right: 0,
-          child: Opacity(
-            opacity: _getOpacity(context),
-            child: BlocBuilder<ProfileBloc, ProfileState>(
-              builder: (context, state) {
-                final addressesLength =
-                    BlocProvider.of<AddressCubit>(context, listen: true)
-                        .state
-                        .deliveryAddresses
-                        .length;
-                return SizedBox(
-                  height: height,
-                  child: ListView(
-                    padding: EdgeInsets.only(
-                      top: topPadding,
-                      bottom: bottomPadding,
-                    ),
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _BuildTopsideCartWidget(
-                        title: 'Додокоины',
-                        subtitle: '${state.person.dodoCoins}',
-                        bottom: 'Нажмите, \nчтобы потратить',
-                        image: const ClipPath(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          child: FaIcon(
-                            FontAwesomeIcons.bitcoin,
-                            size: 60,
-                          ),
-                        ),
-                        onPressed: () {
-                          PlatformDependentMethod.callFutureByPlatform(
-                            androidMethod: () => _androidBonusViewBuilder(context),
-                            iosMethod: () => _iosBonusViewBuilder(context),
-                          );
-                        },
-                      ),
-                      _BuildTopsideCartWidget(
-                        title: 'История\nзаказов',
-                        bottom:
-                            '${state.ordersHistory.total} ${state.ordersHistory.total.declension('заказ', 'заказа', 'заказов')}',
-                        onPressed: () => AppRouter.instance().push(
-                          const OrdersHistoryRoute(),
-                        ),
-                      ),
-                      _BuildTopsideCartWidget(
-                        title: 'Адреса\nдоставки',
-                        bottom:
-                            '$addressesLength ${addressesLength.declension('адрес', 'адреса', 'адресов')}',
-                        onPressed: () {
-                          AppRouter.instance()
-                              .push(const DeliveryAddressesRoute());
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  double get maxExtent => height;
-
-  @override
-  double get minExtent => height;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      true;
-}
-
-class _BuildPromotionBlockWidget extends StatefulWidget {
-  const _BuildPromotionBlockWidget({Key? key}) : super(key: key);
-
-  @override
-  State<_BuildPromotionBlockWidget> createState() =>
-      _BuildPromotionBlockWidgetState();
-}
-
-class _BuildPromotionBlockWidgetState
-    extends State<_BuildPromotionBlockWidget> {
-  int pageIndex = 0;
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        return SliverPadding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: _kMainHorizontalPadding,
-            vertical: _kMainVerticalPadding,
-          ),
-          sliver: SliverList(
-            delegate: SliverChildListDelegate([
-              const Text(
-                'Мои акции',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              const Text('Всего одна, зато какая'),
-              const SizedBox(
-                height: 20,
-              ),
-              SizedBox(
-                // TODO(fix): hardCode size!!!!
-                height: 150,
-                child: PageView(
-                  onPageChanged: (page) {
-                    setState(
-                      () {
-                        pageIndex = page;
-                      },
-                    );
-                  },
-                  children: state.promotions.map(
-                    (promotion) {
-                      return _BuildPromotionCardWidget(promotion: promotion);
-                    },
-                  ).toList(),
-                ),
-              ),
-              if (state.promotions.length > 1)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    state.promotions.length,
-                    (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      width: 15,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: index == pageIndex
-                            ? AppColors.mainIconGrey
-                            : AppColors.mainBgGrey,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+        final addressesLength =
+            BlocProvider.of<AddressCubit>(context, listen: true)
+                .state
+                .deliveryAddresses
+                .length;
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.25,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(
+              horizontal: kMainHorizontalPadding,
+              vertical: kMainHorizontalPadding,
+            ),
+            children: [
+              _BuildTopsideCartWidget(
+                title: 'Додокоины',
+                subtitle: '${state.person.dodoCoins}',
+                bottom: 'Нажмите, \nчтобы потратить',
+                image: const ClipPath(
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: FaIcon(
+                    FontAwesomeIcons.bitcoin,
+                    size: 60,
                   ),
                 ),
-              const SizedBox(
-                height: 15,
+                onPressed: () {
+                  // TODO(mes): посомтреть работу на айфоне
+                  PlatformDependentMethod.callFutureByPlatform(
+                    androidMethod: () => _androidBonusViewBuilder(context),
+                    iosMethod: () => _iosBonusViewBuilder(context),
+                  );
+                },
               ),
-              const Text(
-                'Миссии',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 20,
+              _BuildTopsideCartWidget(
+                title: 'История\nзаказов',
+                bottom:
+                    '${state.ordersHistory.total} ${state.ordersHistory.total.declension('заказ', 'заказа', 'заказов')}',
+                onPressed: () => AppRouter.instance().push(
+                  const OrdersHistoryRoute(),
                 ),
               ),
-              const SizedBox(
-                height: 10,
+              _BuildTopsideCartWidget(
+                title: 'Адреса\nдоставки',
+                bottom:
+                    '$addressesLength ${addressesLength.declension('адрес', 'адреса', 'адресов')}',
+                onPressed: () {
+                  AppRouter.instance().push(const DeliveryAddressesRoute());
+                },
               ),
-              const Text('Выполняйте и получайте додокоины'),
-              const SizedBox(
-                height: 10,
-              ),
-              ...state.missions.map(
-                (e) => _BuildMissionsWidget(
-                  mission: e,
-                ),
-              ),
-            ]),
+            ],
           ),
         );
       },

@@ -14,7 +14,7 @@ import 'package:dodo_clone/src/features/contacts/ui/utils/contacts_lifecycle_man
 import 'package:dodo_clone/src/features/contacts/ui/view/support_chat_view.dart';
 import 'package:dodo_clone/src/features/main/ui/custom_paint/contacts_trapezoid.g.dart';
 import 'package:dodo_clone/src/features/profile/bloc/profile_bloc/profile_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge, ModalBottomSheetRoute;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -132,7 +132,7 @@ class ContactsView extends StatelessWidget {
                               return Badge(
                                 showBadge: unreadMessages.isNotEmpty &&
                                     profileState.person.isNotEmpty,
-                                position: const BadgePosition(top: 0, end: 0),
+                                position: BadgePosition.topStart(),
                                 badgeContent:
                                     Text(unreadMessages.length.toString()),
                                 child: FractionallySizedBox(
@@ -280,4 +280,3 @@ class _BuildContactsIcon extends StatelessWidget {
     );
   }
 }
-

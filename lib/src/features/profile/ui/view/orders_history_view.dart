@@ -7,7 +7,6 @@ import 'package:dodo_clone/src/core/ui/utils/res/app_sizes.dart';
 import 'package:dodo_clone/src/core/ui/widgets/corporate_button.dart';
 import 'package:dodo_clone/src/core/ui/widgets/product_image_widget.dart';
 import 'package:dodo_clone/src/features/profile/bloc/profile_bloc/profile_bloc.dart';
-import 'package:dodo_clone/src/features/shopping_cart/bloc/shopping_cart_cubit.dart';
 import 'package:dodo_clone_repository/dodo_clone_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

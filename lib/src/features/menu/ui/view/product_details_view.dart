@@ -510,7 +510,7 @@ class _BuildEnergyInfoDialogWidget extends StatelessWidget {
                     'Энерг ценность',
                   ),
                   _TextWithPadding(
-                    '${energyValue.calories.toString()} ккал',
+                    '${energyValue.calories} ккал',
                   ),
                 ],
               ),
@@ -521,7 +521,7 @@ class _BuildEnergyInfoDialogWidget extends StatelessWidget {
                     'Белки',
                   ),
                   _TextWithPadding(
-                    '${energyValue.proteins.toString()} г',
+                    '${energyValue.proteins} г',
                   ),
                 ],
               ),
@@ -532,7 +532,7 @@ class _BuildEnergyInfoDialogWidget extends StatelessWidget {
                     'Жиры',
                   ),
                   _TextWithPadding(
-                    '${energyValue.fats.toString()} г',
+                    '${energyValue.fats} г',
                   ),
                 ],
               ),
@@ -543,7 +543,7 @@ class _BuildEnergyInfoDialogWidget extends StatelessWidget {
                     'Углеводы',
                   ),
                   _TextWithPadding(
-                    '${energyValue.carbohydrates.toString()} г',
+                    '${energyValue.carbohydrates} г',
                   ),
                 ],
               ),
@@ -554,7 +554,7 @@ class _BuildEnergyInfoDialogWidget extends StatelessWidget {
                     'Вес',
                   ),
                   _TextWithPadding(
-                    '${offer.properties.weight.toString()} г',
+                    '${offer.properties.weight} г',
                   ),
                 ],
               ),

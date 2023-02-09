@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:address_repository/address_repository.dart';
@@ -14,7 +16,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
@@ -37,7 +38,7 @@ class _AddressesOnMapViewState extends State<AddressesOnMapView> {
   double barrierOpacity = 0;
   late Address selectedAddress;
   late List<Address> addressesWithLocation;
-  late final YandexMapController _mapController;
+  late YandexMapController mapController;
   GlobalKey mapKey = GlobalKey();
   final List<MapObject<dynamic>> mapObjects = [];
   final clusterRestaurantObjId = const MapObjectId('restaurant_object_id');
@@ -73,13 +74,13 @@ class _AddressesOnMapViewState extends State<AddressesOnMapView> {
   }
 
   Future<void> _onMapCreated(YandexMapController yandexMapController) async {
-    _mapController = yandexMapController;
+    mapController = yandexMapController;
     addressesWithLocation =
         widget.addresses.where((address) => address.location != null).toList();
     final selectedAddress =
         addressesWithLocation.firstWhereOrNull((element) => element.selected) ??
             addressesWithLocation.first;
-    await _mapController.moveCamera(
+    await mapController.moveCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
           target: Point(
@@ -89,18 +90,18 @@ class _AddressesOnMapViewState extends State<AddressesOnMapView> {
         ),
       ),
     );
-    await _mapController.moveCamera(CameraUpdate.zoomTo(17));
+    await mapController.moveCamera(CameraUpdate.zoomTo(17));
   }
 
   void zoomIn() {
-    _mapController.moveCamera(
+    mapController.moveCamera(
       CameraUpdate.zoomIn(),
       animation: const MapAnimation(duration: 0.7),
     );
   }
 
   void zoomOut() {
-    _mapController.moveCamera(
+    mapController.moveCamera(
       CameraUpdate.zoomOut(),
       animation: const MapAnimation(duration: 0.7),
     );
@@ -193,7 +194,7 @@ class _AddressesOnMapViewState extends State<AddressesOnMapView> {
         mapKey.currentContext!.size!.height * mediaQuery.devicePixelRatio;
     final width =
         mapKey.currentContext!.size!.width * mediaQuery.devicePixelRatio;
-    await _mapController.toggleUserLayer(
+    await mapController.toggleUserLayer(
       visible: true,
       autoZoomEnabled: true,
       anchor: UserLocationAnchor(

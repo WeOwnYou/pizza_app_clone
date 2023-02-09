@@ -12,9 +12,10 @@ class _ProductsListBlock extends StatelessWidget {
             : state.restaurantProducts;
         return SliverPadding(
           padding: const EdgeInsets.only(
-              left: kMainHorizontalPadding,
-              right: kMainHorizontalPadding,
-              bottom: kBottomNavigationBarHeight * 2),
+            left: kMainHorizontalPadding,
+            right: kMainHorizontalPadding,
+            bottom: kBottomNavigationBarHeight * 2,
+          ),
           sliver: SliverList(
             delegate: SliverChildListDelegate(
               listProducts
